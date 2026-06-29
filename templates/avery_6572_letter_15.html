@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+@page { size: 8.5in 11in; margin: 0.5in 0.21875in; }
+body { margin: 0; padding: 0; }
+.sheet {
+  display: grid;
+  grid-template-columns: repeat(3, 2.625in);
+  grid-template-rows: repeat(5, 2in);
+  column-gap: 0.09375in;
+  row-gap: 0;
+}
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2mm;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.label img { width: 1.5in; height: 1.5in; }
+.info {
+  font-size: 7pt;
+  text-align: center;
+  margin-top: 1mm;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+  {% for card in cards %}
+  <div class="label">
+    <img src="data:image/png;base64,{{ card.qr }}">
+    <div class="info">{{ card.owner }} · {{ card.set }}<br>{{ card.type }}</div>
+  </div>
+  {% endfor %}
+</div>
+</body>
+</html>

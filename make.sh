@@ -8,14 +8,10 @@ function check_venv {
   echo "[OK]   venv ready ($(pipenv --venv 2>&1))"
 }
 
-function check_cairo {
-  brew list cairo > /dev/null 2>&1 || { echo "[ERROR][check_cairo]: cairo not installed -- run: brew install cairo"; return 1; }
-  echo "[OK]   cairo installed (required by weasyprint)"
-}
-
-function check_pango {
-  brew list pango > /dev/null 2>&1 || { echo "[ERROR][check_pango]: pango not installed -- run: brew install pango"; return 1; }
-  echo "[OK]   pango installed (required by weasyprint)"
+function check_brew_dep {
+  local dep="$1"
+  brew list "$dep" > /dev/null 2>&1 || { echo "[ERROR][check_brew_dep]: $dep not installed -- run: brew install $dep"; return 1; }
+  echo "[OK]   $dep installed (required by weasyprint)"
 }
 
 function check_lp {
@@ -39,8 +35,8 @@ function show_status {
   echo "=== Status ==="
   check_pipenv || true
   check_venv   || true
-  check_cairo  || true
-  check_pango  || true
+  check_brew_dep cairo || true
+  check_brew_dep pango || true
   check_lp     || true
   check_printer || true
   echo "=============="

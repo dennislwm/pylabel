@@ -1,9 +1,10 @@
-.PHONY: help install status run dry-run clean
+.PHONY: help install status run dry-run test clean
 SHELL := /bin/bash
 
-CSV     ?= input/cards.csv
-PRINTER ?= HP_LaserJet_M211dw__486E30__20221016133708
-OUT     ?= output
+CSV      ?= input/cards.csv
+PRINTER  ?= HP_LaserJet_M211dw__486E30__20221016133708
+OUT      ?= output
+TEMPLATE ?= templates/avery_6572_letter_15.html
 
 help:
 	@echo ""
@@ -13,6 +14,7 @@ help:
 	@echo "  status     Check system dependencies and printer"
 	@echo "  run        Run pipeline (CSV=input/cards.csv PRINTER=HP_LaserJet_M211dw... OUT=output)"
 	@echo "  dry-run    Run pipeline without printing (CSV=input/cards.csv OUT=output)"
+	@echo "  test       Run test suite"
 	@echo "  clean      Remove pipenv venv, __pycache__, and output PDFs"
 	@echo ""
 
@@ -23,10 +25,13 @@ status:
 	@export PRINTER=$(PRINTER); source ./make.sh && show_status
 
 run:
-	pipenv run python app/pipeline.py --csv $(CSV) --printer $(PRINTER) --out $(OUT)
+	pipenv run python app/pipeline.py --csv $(CSV) --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT)
 
 dry-run:
-	pipenv run python app/pipeline.py --csv $(CSV) --out $(OUT)
+	pipenv run python app/pipeline.py --csv $(CSV) --template $(TEMPLATE) --out $(OUT)
+
+test:
+	pipenv run pytest tests/
 
 clean:
 	pipenv --rm; rm -rf __pycache__ output/*.pdf
