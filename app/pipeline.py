@@ -73,7 +73,8 @@ def main():
     print(f"[OK] QR generated for {len(cards)} cards")
     html = Template(open(args.template).read()).render(cards=cards)
     print(f"[OK] Template rendered ({len(html)} chars)")
-    out_name = os.path.splitext(os.path.basename(args.csv))[0] + ".pdf"
+    out_name = (os.path.splitext(os.path.basename(args.csv))[0] + "_" +
+                os.path.splitext(os.path.basename(args.template))[0] + ".pdf")
     out_path = os.path.join(args.out, out_name)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     HTML(string=html).write_pdf(out_path)
