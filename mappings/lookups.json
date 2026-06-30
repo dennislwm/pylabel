@@ -1,0 +1,17 @@
+{
+  "graded_prefixes": ["PSA", "BGS", "CGC", "SGC"],
+  "non_english_prefixes": ["JP ", "KR ", "ME "],
+  "owner_codes": {
+    "BG": "brigette",
+    "IL": "isabel",
+    "SL": "sebastian"
+  },
+  "type_slugs": {
+    "Booster Box": "booster-box",
+    "ETB": "elite-trainer-box",
+    "PC ETB": "elite-trainer-box-pokemon-center",
+    "Booster Bundle": "booster-bundle",
+    "Pack": "booster-pack",
+    "3-Pack Blister": "3-pack-blister"
+  }
+}

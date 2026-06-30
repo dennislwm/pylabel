@@ -31,3 +31,19 @@ def test_parse_template_meta_valid():
 def test_parse_template_meta_invalid():
     with pytest.raises(ValueError):
         parse_template_meta("bad_template.html")
+
+
+# REQ-003: TST-005
+def test_build_payload_omits_type_when_blank():
+    card = {"owner": "a", "set": "SV08", "type": "",
+            "expense": "10.00", "price_menu": "", "url": ""}
+    assert "Type:" not in build_payload(card, offset=0)
+
+
+# REQ-003: TST-006
+def test_build_payload_omits_url_when_blank():
+    card = {"owner": "a", "set": "SV08", "type": "",
+            "expense": "10.00", "price_menu": "", "url": ""}
+    payload = build_payload(card, offset=0)
+    lines = payload.splitlines()
+    assert all(line.startswith(("Owner:", "Set:", "In:")) or line == "" for line in lines if line)

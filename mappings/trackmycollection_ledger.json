@@ -1,0 +1,17 @@
+{
+  "doc_id": "ytHmIeSU62",
+  "table_id": "grid-czZc4vNVp2",
+  "columns": {
+    "Set": "set",
+    "Date": "date",
+    "Expense": "expense",
+    "Sale": "price_menu",
+    "Platform": "platform",
+    "Vendor": "vendor"
+  },
+  "derived": {
+    "owner": "Player",
+    "type": "Type",
+    "url": ["Set", "Type"]
+  }
+}

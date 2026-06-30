@@ -23,23 +23,20 @@ def parse_args():
     return p.parse_args()
 
 
-def load_csv(path):
-    with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
 def build_payload(card, offset):
     in_val = round(float(card["expense"]) * 100) + offset
     lines = [
         f"Owner: {card['owner']}",
         f"Set: {card['set']}",
-        f"Type: {card['type']}",
-        f"In: {in_val}",
     ]
+    if card["type"].strip():
+        lines.append(f"Type: {card['type']}")
+    lines.append(f"In: {in_val}")
     if card["price_menu"].strip():
         out_val = round(float(card["price_menu"]) * 100) + offset
         lines.append(f"Out: {out_val}")
-    lines.append(card["url"])
+    if card["url"].strip():
+        lines.append(card["url"])
     return "\n".join(lines)
 
 
@@ -64,7 +61,8 @@ def main():
         media, batch_min = parse_template_meta(args.template)
     except ValueError as e:
         sys.exit(f"[ERROR] {e}")
-    cards = load_csv(args.csv)
+    with open(args.csv, newline="", encoding="utf-8") as f:
+        cards = list(csv.DictReader(f))
     if len(cards) < batch_min and not args.force:
         sys.exit(f"[ERROR] Only {len(cards)} rows found; need {batch_min} for a full sheet. Use --force to print anyway.")
     print(f"[OK] Loaded {len(cards)} rows from {args.csv}")
