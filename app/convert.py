@@ -4,12 +4,31 @@ import json
 import os
 import sys
 
-DEFAULT_OWNER = "dennislwm"
-OUTPUT_FIELDS = ["owner", "set", "date", "type", "platform", "vendor", "expense", "price_menu", "url"]
+from jinja2 import Environment
 
 
 def set_to_slug(s):
     return s.lower().replace(".", "pt").replace(" ", "-")
+
+
+def split_card_number(s):
+    parts = s.rsplit(" ", 1)
+    if len(parts) == 2 and parts[1].isdigit():
+        return parts[0], parts[1]
+    return s, ""
+
+
+def build_environment(lookups):
+    env = Environment()
+    env.globals.update(
+        graded_prefixes=tuple(lookups["graded_prefixes"]),
+        non_english_prefixes=tuple(lookups["non_english_prefixes"]),
+    )
+    env.filters["type_slug"] = lambda t: lookups["type_slugs"].get(t)
+    env.filters["slugify"] = set_to_slug
+    env.filters["split_card_number"] = split_card_number
+    env.filters["money"] = lambda v: f"{round(float(v), 2):g}"
+    return env
 
 
 def convert(mapping_path, input_path, output_path, tail=None):
@@ -20,55 +39,34 @@ def convert(mapping_path, input_path, output_path, tail=None):
     with open(lookups_path) as f:
         lookups = json.load(f)
 
-    owner_codes = lookups["owner_codes"]
-    type_slugs = lookups["type_slugs"]
-    graded_prefixes = tuple(lookups["graded_prefixes"])
-    non_english_prefixes = tuple(lookups["non_english_prefixes"])
     col_map = mapping["columns"]
-    derived = mapping["derived"]
+    derived = mapping.get("derived", {})
+    env = build_environment(lookups)
+    templates = {field: env.from_string(expr) for field, expr in derived.items()}
+    output_fields = list(col_map.values()) + list(derived.keys())
+    row_filter = env.compile_expression(mapping.get("filter", "true"))
 
-    rows_out = []
     with open(input_path, newline="", encoding="utf-8") as f:
         rows_in = list(csv.DictReader(f))
 
+    rows_in = [r for r in rows_in if row_filter(**r)]
     rows_in.sort(key=lambda r: r.get("Date", ""), reverse=True)
     if tail is not None:
         rows_in = rows_in[:tail]
 
+    rows_out = []
     for row in rows_in:
-            out = {dst: row.get(src, "") for src, dst in col_map.items()}
-
-            # owner: first token of Player against owner_codes; default dennislwm
-            player = row.get(derived["owner"], "")
-            prefix = player.split()[0] if player else ""
-            out["owner"] = owner_codes.get(prefix, DEFAULT_OWNER)
-
-            # type + url: sealed / single (Raw) / graded (PSA*)
-            type_val = row.get(derived["type"], "")
-            set_val = out.get("set", "")
-
-            if type_val == "Raw" or type_val.upper().startswith(graded_prefixes):
-                out["type"] = ""
-                out["url"] = ""
-            else:
-                out["type"] = type_val
-                type_slug = type_slugs.get(type_val)
-                if not type_slug:
-                    print(f"[WARN] unknown type {type_val!r} -- url left blank", file=sys.stderr)
-                    out["url"] = ""
-                elif any(set_val.startswith(p) for p in non_english_prefixes):
-                    print(f"[WARN] non-English set {set_val!r} -- url left blank", file=sys.stderr)
-                    out["url"] = ""
-                else:
-                    out["url"] = (
-                        f"https://www.pricecharting.com/game/"
-                        f"pokemon-{set_to_slug(set_val)}/{type_slug}"
-                    )
-
-            rows_out.append(out)
+        out = {dst: row.get(src, "") for src, dst in col_map.items()}
+        for field, template in templates.items():
+            try:
+                out[field] = template.render(**row)
+            except Exception as e:
+                print(f"[WARN] derive {field!r} failed for row {row!r}: {e}", file=sys.stderr)
+                out[field] = ""
+        rows_out.append(out)
 
     with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=OUTPUT_FIELDS)
+        writer = csv.DictWriter(f, fieldnames=output_fields)
         writer.writeheader()
         writer.writerows(rows_out)
 

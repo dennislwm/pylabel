@@ -1,0 +1,20 @@
+{
+  "doc_id": "ytHmIeSU62",
+  "table_id": "grid-vl71OA93BQ",
+  "columns": {
+    "RefId": "refid",
+    "Owner": "owner",
+    "Set": "set",
+    "Date": "date",
+    "Vendor": "vendor",
+    "Platform": "platform"
+  },
+  "filter": "Printed != 'True'",
+  "derived": {
+    "expense": "{{ (Qty|float * Price|float)|money if Qty and Price else Expense }}",
+    "qty": "{{ Qty if Qty and Price else 1 }}",
+    "price": "{{ Price if Qty and Price else Expense }}",
+    "type": "{% if Type == 'Raw' %}{% set name, number = Character|split_card_number %}{{ name }} | {{ number }}{% elif Type.upper().startswith(graded_prefixes) %}{% set name, number = Character|split_card_number %}{{ Type }} | {{ name }} | {{ number }}{% else %}{{ Type }}{% endif %}",
+    "url": "{% set blocked = Type == 'Raw' or Type.upper().startswith(graded_prefixes) or Set.startswith(non_english_prefixes) %}{% set slug = Type|type_slug %}{% if not blocked and slug %}https://www.pricecharting.com/game/pokemon-{{ Set|slugify }}/{{ slug }}{% endif %}"
+  }
+}

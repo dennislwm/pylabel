@@ -1,0 +1,10 @@
+{% if refid %}Ref: {{ refid }}
+{% endif %}Owner: {{ owner }}
+Set: {{ set }}
+{% if type %}Type: {{ type }}
+{% endif %}{% if qty|int > 1 %}Qty: {{ qty }}
+Price: {{ price_cents }}
+{% endif %}In: {{ in_cents }}
+{% if out_cents is defined %}Out: {{ out_cents }}
+{% endif %}{% if url %}{{ url }}
+{% endif %}

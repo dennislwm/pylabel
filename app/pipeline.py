@@ -8,14 +8,17 @@ import subprocess
 import sys
 
 import segno
-from jinja2 import Template
+from jinja2 import Environment, Template
 from weasyprint import HTML
+
+QR_ENV = Environment(trim_blocks=True, lstrip_blocks=True)
 
 
 def parse_args():
     p = argparse.ArgumentParser(description="Generate QR label sheet PDF")
     p.add_argument("--csv", required=True)
     p.add_argument("--template", default="templates/avery_6572_letter_15.html")
+    p.add_argument("--qr-template", default="templates/qr_payload.txt")
     p.add_argument("--out", default="output")
     p.add_argument("--printer")
     p.add_argument("--offset", type=int, default=0)
@@ -23,25 +26,24 @@ def parse_args():
     return p.parse_args()
 
 
-def build_payload(card, offset):
-    in_val = round(float(card["expense"]) * 100) + offset
-    lines = [
-        f"Owner: {card['owner']}",
-        f"Set: {card['set']}",
-    ]
-    if card["type"].strip():
-        lines.append(f"Type: {card['type']}")
-    lines.append(f"In: {in_val}")
-    if card["price_menu"].strip():
-        out_val = round(float(card["price_menu"]) * 100) + offset
-        lines.append(f"Out: {out_val}")
-    if card["url"].strip():
-        lines.append(card["url"])
-    return "\n".join(lines)
+def load_qr_template(path):
+    with open(path) as f:
+        return QR_ENV.from_string(f.read())
 
 
-def card_to_qr_b64(card, offset):
-    payload = build_payload(card, offset)
+def build_payload(card, offset, qr_template):
+    ctx = dict(card)
+    ctx.setdefault("qty", "1")
+    ctx["in_cents"] = round(float(card["expense"]) * 100) + offset
+    if card.get("price_menu", "").strip():
+        ctx["out_cents"] = round(float(card["price_menu"]) * 100) + offset
+    if int(card.get("qty") or 1) > 1 and card.get("price", "").strip():
+        ctx["price_cents"] = round(float(card["price"]) * 100) + offset
+    return qr_template.render(**ctx).strip("\n")
+
+
+def card_to_qr_b64(card, offset, qr_template):
+    payload = build_payload(card, offset, qr_template)
     qr = segno.make(payload, error="M")
     buf = io.BytesIO()
     qr.save(buf, kind="png", scale=10)
@@ -66,8 +68,9 @@ def main():
     if len(cards) < batch_min and not args.force:
         sys.exit(f"[ERROR] Only {len(cards)} rows found; need {batch_min} for a full sheet. Use --force to print anyway.")
     print(f"[OK] Loaded {len(cards)} rows from {args.csv}")
+    qr_template = load_qr_template(args.qr_template)
     for card in cards:
-        card["qr"] = card_to_qr_b64(card, args.offset)
+        card["qr"] = card_to_qr_b64(card, args.offset, qr_template)
     print(f"[OK] QR generated for {len(cards)} cards")
     html = Template(open(args.template).read()).render(cards=cards)
     print(f"[OK] Template rendered ({len(html)} chars)")

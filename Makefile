@@ -14,8 +14,8 @@ FORCE_ARG = $(if $(FORCE),--force,)
 help:
 	@echo ""
 	@echo "=== Ledger Workflow ==="
-	@echo "  1. make stage-ledger [TAIL=30]   Export from Coda + convert to input/ledger.csv"
-	@echo "  2. (inspect and curate input/ledger.csv -- delete rows you do not want printed)"
+	@echo "  1. (curate in Coda -- tick Printed on rows already printed)"
+	@echo "  2. make stage-ledger [TAIL=30]   Export from Coda + convert to input/ledger.csv (Printed rows excluded)"
 	@echo "  3. make dry-ledger               Generate PDF without printing"
 	@echo "  4. make run-ledger               Print"
 	@echo ""
@@ -33,8 +33,8 @@ help:
 	@echo ""
 
 stage-ledger:
-	cd ../13coda-cli/app && pipenv run python coda.py export-table --doc ytHmIeSU62 --table grid-czZc4vNVp2 --output output/ledger.csv
-	pipenv run python app/convert.py --mapping mappings/trackmycollection_ledger.json --input ../13coda-cli/app/output/ledger.csv --output input/ledger.csv $(TAIL_ARG)
+	cd ../13coda-cli/app && pipenv run python coda.py export-table --doc ytHmIeSU62 --table grid-vl71OA93BQ --output output/ledger.csv
+	pipenv run python app/convert.py --mapping mappings/trackmycollection_pylabel_ledger.json --input ../13coda-cli/app/output/ledger.csv --output input/ledger.csv $(TAIL_ARG)
 
 dry-ledger:
 	pipenv run python app/pipeline.py --csv input/ledger.csv --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET) --force
