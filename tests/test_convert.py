@@ -148,3 +148,57 @@ def test_refid_passthrough():
         "Expense": "10.00", "Type": "Booster Box",
     }])
     assert rows[0]["refid"] == "1251"
+
+
+PYLABEL_GRADED_MAPPING = os.path.join(os.path.dirname(__file__), '..', 'mappings', 'pylabel-graded.json')
+LEDGER_MAPPING = os.path.join(os.path.dirname(__file__), '..', 'mappings', 'trackmycollection_pylabel_ledger.json')
+
+GRADED_FIELDNAMES = ["RefId", "Owner", "Set", "Date", "Vendor", "Serial No", "Qty", "Price",
+                     "Expense", "Card No", "Type", "Character", "Printed"]
+
+LEDGER_FIELDNAMES = ["Owner", "Expense", "Set", "Date", "Vendor", "Player", "Type", "Printed",
+                     "RefId", "Platform", "Qty", "Price", "Character", "Serial No"]
+
+
+def run_convert_with_file(mapping_path, rows, fieldnames):
+    with tempfile.TemporaryDirectory() as d:
+        input_path = os.path.join(d, "input.csv")
+        output_path = os.path.join(d, "output.csv")
+        with open(input_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        convert(mapping_path, input_path, output_path)
+        with open(output_path, newline="", encoding="utf-8") as f:
+            return list(csv.DictReader(f))
+
+
+# REQ-003: TST-022 (real pylabel-graded.json, Japanese graded row -> SnkrDunk keyed by Card No)
+def test_snkrdunk_url_keyed_by_card_number_for_graded():
+    rows = run_convert_with_file(PYLABEL_GRADED_MAPPING, [{
+        "RefId": "1", "Owner": "DL", "Set": "JP M2a Mega Dream", "Date": "2026-03-15",
+        "Vendor": "Test", "Serial No": "157768060", "Qty": "", "Price": "",
+        "Expense": "427", "Card No": "240", "Type": "PSA10", "Character": "Mega Gengar", "Printed": "False",
+    }], GRADED_FIELDNAMES)
+    assert rows[0]["url"] == "https://snkrdunk.com/apparels/724996"
+
+
+# REQ-003: TST-023 (real Ledger mapping, Japanese sealed row -> SnkrDunk keyed by Type, no Card No exists)
+def test_snkrdunk_url_keyed_by_type_for_sealed():
+    rows = run_convert_with_file(LEDGER_MAPPING, [{
+        "Owner": "DL", "Expense": "156.21", "Set": "JP M5 Abyss Eye", "Date": "2026-06-22",
+        "Vendor": "Test", "Player": "", "Type": "Booster Box", "Printed": "False",
+        "RefId": "1272", "Platform": "Buyandship", "Qty": "2", "Price": "78.11",
+        "Character": "", "Serial No": "",
+    }], LEDGER_FIELDNAMES)
+    assert rows[0]["url"] == "https://snkrdunk.com/apparels/806644"
+
+
+# REQ-003: TST-024 (real pylabel-graded.json, non-Japanese graded row -> PriceCharting search URL, not a guessed slug)
+def test_pricecharting_search_url_for_non_japanese_graded():
+    rows = run_convert_with_file(PYLABEL_GRADED_MAPPING, [{
+        "RefId": "2", "Owner": "Top", "Set": "ME02 Phantasmal Flames", "Date": "2026-03-15",
+        "Vendor": "Test", "Serial No": "157768050", "Qty": "", "Price": "",
+        "Expense": "47", "Card No": "109/094", "Type": "PSA9", "Character": "Mega Charizard", "Printed": "False",
+    }], GRADED_FIELDNAMES)
+    assert rows[0]["url"].startswith("https://www.pricecharting.com/search-products?type=prices&q=")

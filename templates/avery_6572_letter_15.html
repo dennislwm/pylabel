@@ -34,6 +34,7 @@ body { margin: 0; padding: 0; }
 </head>
 <body>
 <div class="sheet">
+  {% for _ in range(start - 1) %}<div class="label"></div>{% endfor %}
   {% for card in cards %}
   <div class="label">
     <img src="data:image/png;base64,{{ card.qr }}">

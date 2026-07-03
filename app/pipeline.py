@@ -6,12 +6,14 @@ import os
 import re
 import subprocess
 import sys
+from datetime import datetime
 
 import segno
 from jinja2 import Environment, Template
 from weasyprint import HTML
 
 QR_ENV = Environment(trim_blocks=True, lstrip_blocks=True)
+QR_ENV.filters["dateformat"] = lambda s: datetime.fromisoformat(s).strftime("%d-%b-%y")
 
 
 def parse_args():
@@ -22,6 +24,7 @@ def parse_args():
     p.add_argument("--out", default="output")
     p.add_argument("--printer")
     p.add_argument("--offset", type=int, default=0)
+    p.add_argument("--start-label", type=int, default=1)
     p.add_argument("--force", action="store_true")
     return p.parse_args()
 
@@ -72,7 +75,7 @@ def main():
     for card in cards:
         card["qr"] = card_to_qr_b64(card, args.offset, qr_template)
     print(f"[OK] QR generated for {len(cards)} cards")
-    html = Template(open(args.template).read()).render(cards=cards)
+    html = Template(open(args.template).read()).render(cards=cards, start=args.start_label)
     print(f"[OK] Template rendered ({len(html)} chars)")
     out_name = (os.path.splitext(os.path.basename(args.csv))[0] + "_" +
                 os.path.splitext(os.path.basename(args.template))[0] + ".pdf")

@@ -1,5 +1,6 @@
 {% if refid %}Ref: {{ refid }}
-{% endif %}Owner: {{ owner }}
+{% endif %}Date: {{ date|dateformat }}
+Owner: {{ owner }}
 {% if vendor %}Vendor: {{ vendor }}
 {% endif %}Set: {{ set }}
 {% if type %}Type: {{ type }}

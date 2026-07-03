@@ -7,7 +7,8 @@
     "Set": "set",
     "Date": "date",
     "Vendor": "vendor",
-    "Platform": "platform"
+    "Platform": "platform",
+    "Serial No": "serial_no"
   },
   "filter": "Printed != 'True'",
   "derived": {
@@ -15,6 +16,6 @@
     "qty": "{{ Qty if Qty and Price else 1 }}",
     "price": "{{ Price if Qty and Price else Expense }}",
     "type": "{% if Type == 'Raw' %}{% set name, number = Character|split_card_number %}{{ name }} | {{ number }}{% elif Type.upper().startswith(graded_prefixes) %}{% set name, number = Character|split_card_number %}{{ Type }} | {{ name }} | {{ number }}{% else %}{{ Type }}{% endif %}",
-    "url": "{% set blocked = Type == 'Raw' or Type.upper().startswith(graded_prefixes) or Set.startswith(non_english_prefixes) %}{% set slug = Type|type_slug %}{% if not blocked and slug %}https://www.pricecharting.com/game/pokemon-{{ Set|slugify }}/{{ slug }}{% endif %}"
+    "url": "{% if Set.startswith(non_english_prefixes) %}{% if Type == 'Raw' or Type.upper().startswith(graded_prefixes) %}{% set name, number = Character|split_card_number %}{% set sid = snkrdunk_ids.get(Set, {}).get(number) %}{% else %}{% set sid = snkrdunk_ids.get(Set, {}).get(Type) %}{% endif %}{% if sid %}https://snkrdunk.com/apparels/{{ sid }}{% endif %}{% else %}{% set blocked = Type == 'Raw' or Type.upper().startswith(graded_prefixes) %}{% set slug = Type|type_slug %}{% if not blocked and slug %}https://www.pricecharting.com/game/pokemon-{{ Set|slugify }}/{{ slug }}{% endif %}{% endif %}"
   }
 }
