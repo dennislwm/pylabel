@@ -1,4 +1,4 @@
-.PHONY: help install status run dry-run test clean stage-ledger run-ledger dry-ledger
+.PHONY: help install status run dry-run test clean stage-ledger run-ledger dry-ledger stage-graded dry-graded run-graded
 SHELL := /bin/bash
 
 CSV      ?= input/cards.csv
@@ -26,6 +26,9 @@ help:
 	@echo "  stage-ledger   Export Ledger from Coda + convert to input/ledger.csv"
 	@echo "  dry-ledger     Run pipeline on input/ledger.csv without printing"
 	@echo "  run-ledger     Run pipeline on input/ledger.csv and print"
+	@echo "  stage-graded   Export Pylabel-Graded from Coda + convert to input/pylabel-graded.csv"
+	@echo "  dry-graded     Run pipeline on input/pylabel-graded.csv without printing"
+	@echo "  run-graded     Run pipeline on input/pylabel-graded.csv and print"
 	@echo "  run            Run pipeline (CSV=input/cards.csv PRINTER=... OUT=output)"
 	@echo "  dry-run        Run pipeline without printing (CSV=input/cards.csv OUT=output)"
 	@echo "  test           Run test suite"
@@ -41,6 +44,16 @@ dry-ledger:
 
 run-ledger:
 	pipenv run python app/pipeline.py --csv input/ledger.csv --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET) $(FORCE_ARG)
+
+stage-graded:
+	cd ../13coda-cli/app && pipenv run python coda.py export-table --doc -vNHwSh0wi --table grid-pndI3q61Yn --output output/pylabel-graded.csv
+	pipenv run python app/convert.py --mapping mappings/pylabel-graded.json --input ../13coda-cli/app/output/pylabel-graded.csv --output input/pylabel-graded.csv $(TAIL_ARG)
+
+dry-graded:
+	pipenv run python app/pipeline.py --csv input/pylabel-graded.csv --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET) --force
+
+run-graded:
+	pipenv run python app/pipeline.py --csv input/pylabel-graded.csv --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET) $(FORCE_ARG)
 
 install:
 	pipenv install

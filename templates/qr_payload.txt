@@ -2,6 +2,7 @@
 {% endif %}Owner: {{ owner }}
 Set: {{ set }}
 {% if type %}Type: {{ type }}
+{% endif %}{% if serial_no %}Cert: {{ serial_no }}
 {% endif %}{% if qty|int > 1 %}Qty: {{ qty }}
 Price: {{ price_cents }}
 {% endif %}In: {{ in_cents }}

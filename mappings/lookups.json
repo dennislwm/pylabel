@@ -8,5 +8,19 @@
     "Booster Bundle": "booster-bundle",
     "Pack": "booster-pack",
     "3-Pack Blister": "3-pack-blister"
+  },
+  "snkrdunk_ids": {
+    "JP M2a Mega Dream": {
+      "240": "724996",
+      "237": "730958",
+      "234": "730956"
+    },
+    "JP S12a Vstar Universe": {
+      "212": "103079",
+      "221": "103080"
+    },
+    "JP SVP Promo": {
+      "098/SV-P": "135232"
+    }
   }
 }

@@ -1,0 +1,20 @@
+{
+  "doc_id": "-vNHwSh0wi",
+  "table_id": "grid-pndI3q61Yn",
+  "columns": {
+    "RefId": "refid",
+    "Owner": "owner",
+    "Set": "set",
+    "Date": "date",
+    "Vendor": "vendor",
+    "Serial No": "serial_no"
+  },
+  "filter": "Printed != 'True'",
+  "derived": {
+    "expense": "{{ (Qty|float * Price|float)|money if Qty and Price else Expense }}",
+    "qty": "{{ Qty if Qty and Price else 1 }}",
+    "price": "{{ Price if Qty and Price else Expense }}",
+    "type": "{{ Type }} | {{ Character }} | {{ Card_No }}",
+    "url": "{% if Set.startswith(non_english_prefixes) %}{% set sid = snkrdunk_ids.get(Set, {}).get(Card_No) %}{% if sid %}https://snkrdunk.com/apparels/{{ sid }}{% endif %}{% else %}https://www.pricecharting.com/search-products?type=prices&q={{ (Character ~ ' ' ~ Card_No)|urlencode }}{% endif %}"
+  }
+}

@@ -23,6 +23,7 @@ def build_environment(lookups):
     env.globals.update(
         graded_prefixes=tuple(lookups["graded_prefixes"]),
         non_english_prefixes=tuple(lookups["non_english_prefixes"]),
+        snkrdunk_ids=lookups.get("snkrdunk_ids", {}),
     )
     env.filters["type_slug"] = lambda t: lookups["type_slugs"].get(t)
     env.filters["slugify"] = set_to_slug
@@ -49,7 +50,7 @@ def convert(mapping_path, input_path, output_path, tail=None):
     with open(input_path, newline="", encoding="utf-8") as f:
         rows_in = list(csv.DictReader(f))
 
-    rows_in = [r for r in rows_in if row_filter(**r)]
+    rows_in = [r for r in rows_in if row_filter(**{k.replace(" ", "_"): v for k, v in r.items()})]
     rows_in.sort(key=lambda r: r.get("Date", ""), reverse=True)
     if tail is not None:
         rows_in = rows_in[:tail]
@@ -59,7 +60,7 @@ def convert(mapping_path, input_path, output_path, tail=None):
         out = {dst: row.get(src, "") for src, dst in col_map.items()}
         for field, template in templates.items():
             try:
-                out[field] = template.render(**row)
+                out[field] = template.render(**{k.replace(" ", "_"): v for k, v in row.items()})
             except Exception as e:
                 print(f"[WARN] derive {field!r} failed for row {row!r}: {e}", file=sys.stderr)
                 out[field] = ""
