@@ -25,10 +25,18 @@ def base_card():
 
 
 # REQ-000: TST-001
-def test_build_payload_encodes_cents_and_offset(qr_template, base_card):
+def test_build_payload_encodes_dollars_and_offset(qr_template, base_card):
     card = {**base_card, "type": "X | 1", "price_menu": "15.00", "url": "https://x.com"}
-    assert "In: 1500" in build_payload(card, offset=500, qr_template=qr_template)
-    assert "Out: 2000" in build_payload(card, offset=500, qr_template=qr_template)
+    assert "In: 15.00" in build_payload(card, offset=5, qr_template=qr_template)
+    assert "Out: 20.00" in build_payload(card, offset=5, qr_template=qr_template)
+
+
+# REQ-004: offset stays dollars-denominated regardless of --show-cents
+def test_build_payload_show_cents_uses_same_dollar_offset(qr_template, base_card):
+    card = {**base_card, "type": "X | 1", "price_menu": "15.00", "url": "https://x.com"}
+    payload = build_payload(card, offset=5, qr_template=qr_template, show_cents=True)
+    assert "In: 1500" in payload
+    assert "Out: 2000" in payload
 
 
 # REQ-000: TST-002
@@ -88,8 +96,11 @@ def test_build_payload_shows_qty_price_when_bulk(qr_template, base_card):
     card = {**base_card, "qty": "3", "price": "1380", "expense": "4140"}
     payload = build_payload(card, offset=0, qr_template=qr_template)
     assert "Qty: 3" in payload
-    assert "Price: 138000" in payload
-    assert "In: 414000" in payload
+    assert "Price: 1380.00" in payload
+    assert "In: 4140.00" in payload
+    payload_cents = build_payload(card, offset=0, qr_template=qr_template, show_cents=True)
+    assert "Price: 138000" in payload_cents
+    assert "In: 414000" in payload_cents
 
 
 # REQ-001: start-label pads blank grid cells before the real cards
@@ -157,5 +168,5 @@ def test_convert_output_feeds_build_payload_for_bulk_purchase(qr_template):
 
     payload = build_payload(card, offset=0, qr_template=qr_template)
     assert "Qty: 3" in payload
-    assert "Price: 138000" in payload
-    assert "In: 414000" in payload
+    assert "Price: 1380.00" in payload
+    assert "In: 4140.00" in payload
