@@ -23,9 +23,10 @@ def parse_args():
     p.add_argument("--qr-template", default="templates/qr_payload.txt")
     p.add_argument("--out", default="output")
     p.add_argument("--printer")
-    p.add_argument("--offset", type=int, default=0)
+    p.add_argument("--offset", type=float, default=0, help="dollars, added regardless of --show-cents")
     p.add_argument("--start-label", type=int, default=1)
     p.add_argument("--force", action="store_true")
+    p.add_argument("--show-cents", action="store_true")
     return p.parse_args()
 
 
@@ -34,19 +35,21 @@ def load_qr_template(path):
         return QR_ENV.from_string(f.read())
 
 
-def build_payload(card, offset, qr_template):
+def build_payload(card, offset, qr_template, show_cents=False):
     ctx = dict(card)
     ctx.setdefault("qty", "1")
-    ctx["in_cents"] = round(float(card["expense"]) * 100) + offset
+    offset_cents = round(offset * 100)
+    fmt = (lambda c: c) if show_cents else (lambda c: f"{c / 100:.2f}")
+    ctx["in_amount"] = fmt(round(float(card["expense"]) * 100) + offset_cents)
     if card.get("price_menu", "").strip():
-        ctx["out_cents"] = round(float(card["price_menu"]) * 100) + offset
+        ctx["out_amount"] = fmt(round(float(card["price_menu"]) * 100) + offset_cents)
     if int(card.get("qty") or 1) > 1 and card.get("price", "").strip():
-        ctx["price_cents"] = round(float(card["price"]) * 100) + offset
+        ctx["price_amount"] = fmt(round(float(card["price"]) * 100) + offset_cents)
     return qr_template.render(**ctx).strip("\n")
 
 
-def card_to_qr_b64(card, offset, qr_template):
-    payload = build_payload(card, offset, qr_template)
+def card_to_qr_b64(card, offset, qr_template, show_cents=False):
+    payload = build_payload(card, offset, qr_template, show_cents)
     qr = segno.make(payload, error="M")
     buf = io.BytesIO()
     qr.save(buf, kind="png", scale=10)
@@ -73,7 +76,7 @@ def main():
     print(f"[OK] Loaded {len(cards)} rows from {args.csv}")
     qr_template = load_qr_template(args.qr_template)
     for card in cards:
-        card["qr"] = card_to_qr_b64(card, args.offset, qr_template)
+        card["qr"] = card_to_qr_b64(card, args.offset, qr_template, args.show_cents)
     print(f"[OK] QR generated for {len(cards)} cards")
     html = Template(open(args.template).read()).render(cards=cards, start=args.start_label)
     print(f"[OK] Template rendered ({len(html)} chars)")

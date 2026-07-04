@@ -8,8 +8,10 @@ TEMPLATE ?= templates/avery_l7161_a4_18.html
 TAIL     ?=
 FORCE    ?=
 OFFSET   ?= 0
+START_LABEL ?=
 TAIL_ARG  = $(if $(TAIL),--tail $(TAIL),)
 FORCE_ARG = $(if $(FORCE),--force,)
+START_LABEL_ARG = $(if $(START_LABEL),--start-label $(START_LABEL),)
 
 help:
 	@echo ""
@@ -32,6 +34,7 @@ help:
 	@echo "  run            Run pipeline (CSV=input/cards.csv PRINTER=... OUT=output)"
 	@echo "  dry-run        Run pipeline without printing (CSV=input/cards.csv OUT=output)"
 	@echo "  test           Run test suite"
+	@echo "  (all dry-*/run-* targets accept START_LABEL=N to resume a partially-used sheet)"
 	@echo "  clean          Remove pipenv venv, __pycache__, and output PDFs"
 	@echo ""
 
@@ -40,20 +43,20 @@ stage-ledger:
 	pipenv run python app/convert.py --mapping mappings/trackmycollection_pylabel_ledger.json --input ../13coda-cli/app/output/ledger.csv --output input/ledger.csv $(TAIL_ARG)
 
 dry-ledger:
-	pipenv run python app/pipeline.py --csv input/ledger.csv --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET) --force
+	pipenv run python app/pipeline.py --csv input/ledger.csv --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET) $(START_LABEL_ARG) --force
 
 run-ledger:
-	pipenv run python app/pipeline.py --csv input/ledger.csv --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET) $(FORCE_ARG)
+	pipenv run python app/pipeline.py --csv input/ledger.csv --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET) $(START_LABEL_ARG) $(FORCE_ARG)
 
 stage-graded:
 	cd ../13coda-cli/app && pipenv run python coda.py export-table --doc -vNHwSh0wi --table grid-pndI3q61Yn --output output/pylabel-graded.csv
 	pipenv run python app/convert.py --mapping mappings/pylabel-graded.json --input ../13coda-cli/app/output/pylabel-graded.csv --output input/pylabel-graded.csv $(TAIL_ARG)
 
 dry-graded:
-	pipenv run python app/pipeline.py --csv input/pylabel-graded.csv --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET) --force
+	pipenv run python app/pipeline.py --csv input/pylabel-graded.csv --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET) $(START_LABEL_ARG) --force
 
 run-graded:
-	pipenv run python app/pipeline.py --csv input/pylabel-graded.csv --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET) $(FORCE_ARG)
+	pipenv run python app/pipeline.py --csv input/pylabel-graded.csv --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET) $(START_LABEL_ARG) $(FORCE_ARG)
 
 install:
 	pipenv install
@@ -62,10 +65,10 @@ status:
 	@export PRINTER=$(PRINTER); source ./make.sh && show_status
 
 run:
-	pipenv run python app/pipeline.py --csv $(CSV) --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET)
+	pipenv run python app/pipeline.py --csv $(CSV) --template $(TEMPLATE) --printer $(PRINTER) --out $(OUT) --offset $(OFFSET) $(START_LABEL_ARG)
 
 dry-run:
-	pipenv run python app/pipeline.py --csv $(CSV) --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET)
+	pipenv run python app/pipeline.py --csv $(CSV) --template $(TEMPLATE) --out $(OUT) --offset $(OFFSET) $(START_LABEL_ARG)
 
 test:
 	pipenv run pytest tests/

@@ -46,7 +46,7 @@ body { margin: 0; padding: 0; }
   {% for card in cards %}
   <div class="label">
     <img src="data:image/png;base64,{{ card.qr }}">
-    <div class="info">{{ card.owner }} · {{ card.set }}<br>
+    <div class="info"><span class="{{ 'small-type' if (card.owner ~ ' · ' ~ card.set)|length >= 30 else '' }}">{{ card.owner }} · {{ card.set }}</span><br>
     <span class="{{ 'small-type' if card.type|length > 30 else '' }}">{{ card.type }}</span></div>
   </div>
   {% endfor %}

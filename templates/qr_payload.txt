@@ -1,13 +1,14 @@
 {% if refid %}Ref: {{ refid }}
 {% endif %}Date: {{ date|dateformat }}
 Owner: {{ owner }}
-{% if vendor %}Vendor: {{ vendor }}
+{% if platform %}Platform: {{ platform }}
+{% endif %}{% if vendor %}Vendor: {{ vendor }}
 {% endif %}Set: {{ set }}
 {% if type %}Type: {{ type }}
 {% endif %}{% if serial_no %}Cert: {{ serial_no }}
 {% endif %}{% if qty|int > 1 %}Qty: {{ qty }}
-Price: {{ price_cents }}
-{% endif %}In: {{ in_cents }}
-{% if out_cents is defined %}Out: {{ out_cents }}
+Price: {{ price_amount }}
+{% endif %}In: {{ in_amount }}
+{% if out_amount is defined %}Out: {{ out_amount }}
 {% endif %}{% if url %}{{ url }}
 {% endif %}
