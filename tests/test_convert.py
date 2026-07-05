@@ -5,7 +5,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'app'))
-from convert import convert
+from convert import convert, find_blank_derived_fields, set_to_slug
 
 MAPPING = {
     "doc_id": "test",
@@ -68,7 +68,7 @@ def test_sealed_english_url_derived():
     rows = run_convert([{
         "Set": "SV08 Surging Sparks", "Date": "2026-06-30", "Expense": "10.00", "Type": "Booster Box",
     }])
-    assert rows[0]["url"] == "https://www.pricecharting.com/game/pokemon-sv08-surging-sparks/booster-box"
+    assert rows[0]["url"] == "https://www.pricecharting.com/game/pokemon-surging-sparks/booster-box"
     assert rows[0]["type"] == "Booster Box"
 
 
@@ -202,3 +202,32 @@ def test_pricecharting_search_url_for_non_japanese_graded():
         "Expense": "47", "Card No": "109/094", "Type": "PSA9", "Character": "Mega Charizard", "Printed": "False",
     }], GRADED_FIELDNAMES)
     assert rows[0]["url"].startswith("https://www.pricecharting.com/search-products?type=prices&q=")
+
+
+# REQ-003: TST-031
+def test_find_blank_derived_fields_lists_rows_and_omits_clean_fields():
+    rows_out = [
+        {"refid": "1", "url": "", "price_menu": "15.00", "expense": "10.00"},
+        {"refid": "2", "url": "https://x.com", "price_menu": "", "expense": "20.00"},
+        {"refid": "", "owner": "alice", "url": "", "price_menu": "", "expense": "5.00"},
+    ]
+    blanks = find_blank_derived_fields(rows_out, ["url", "price_menu", "expense"])
+    assert blanks == {"url": ["1", "alice"], "price_menu": ["2", "alice"]}
+    assert "expense" not in blanks
+
+
+# REQ-003: TST-030 (real Ledger mapping, English Raw row -> PriceCharting search URL, not blank)
+def test_pricecharting_search_url_for_ledger_english_raw():
+    rows = run_convert_with_file(LEDGER_MAPPING, [{
+        "Owner": "DL", "Expense": "10.00", "Set": "SV08 Surging Sparks", "Date": "2026-06-30",
+        "Vendor": "Test", "Player": "", "Type": "Raw", "Printed": "False",
+        "RefId": "1300", "Platform": "Shopee", "Qty": "", "Price": "",
+        "Character": "Charizard ex 125", "Serial No": "",
+    }], LEDGER_FIELDNAMES)
+    assert rows[0]["url"].startswith("https://www.pricecharting.com/search-products?type=prices&q=")
+
+
+# REQ-003: TST-032
+def test_set_to_slug_strips_dotted_set_code_prefix():
+    assert set_to_slug("SV08.5 Prismatic Evolutions") == "prismatic-evolutions"
+    assert set_to_slug("SV08 Surging Sparks") == "surging-sparks"

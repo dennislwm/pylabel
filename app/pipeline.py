@@ -27,6 +27,7 @@ def parse_args():
     p.add_argument("--start-label", type=int, default=1)
     p.add_argument("--force", action="store_true")
     p.add_argument("--show-cents", action="store_true")
+    p.add_argument("--print-qty", action="store_true", help="repeat each row's label qty times")
     return p.parse_args()
 
 
@@ -56,6 +57,10 @@ def card_to_qr_b64(card, offset, qr_template, show_cents=False):
     return base64.b64encode(buf.getvalue()).decode()
 
 
+def expand_by_qty(cards):
+    return [c for c in cards for _ in range(int(c.get("qty") or 1))]
+
+
 def parse_template_meta(path):
     m = re.search(r'_([a-z0-9]+)_(\d+)\.html$', path)
     if not m:
@@ -71,6 +76,8 @@ def main():
         sys.exit(f"[ERROR] {e}")
     with open(args.csv, newline="", encoding="utf-8") as f:
         cards = list(csv.DictReader(f))
+    if args.print_qty:
+        cards = expand_by_qty(cards)
     if len(cards) < batch_min and not args.force:
         sys.exit(f"[ERROR] Only {len(cards)} rows found; need {batch_min} for a full sheet. Use --force to print anyway.")
     print(f"[OK] Loaded {len(cards)} rows from {args.csv}")

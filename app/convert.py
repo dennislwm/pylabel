@@ -2,12 +2,14 @@ import argparse
 import csv
 import json
 import os
+import re
 import sys
 
 from jinja2 import Environment
 
 
 def set_to_slug(s):
+    s = re.sub(r'^[A-Z]{1,4}\d+(\.\d+)?\s+', '', s)
     return s.lower().replace(".", "pt").replace(" ", "-")
 
 
@@ -30,6 +32,15 @@ def build_environment(lookups):
     env.filters["split_card_number"] = split_card_number
     env.filters["money"] = lambda v: f"{round(float(v), 2):g}"
     return env
+
+
+def find_blank_derived_fields(rows_out, derived_fields):
+    blanks = {}
+    for field in derived_fields:
+        rows = [r.get("refid") or r.get("owner", "?") for r in rows_out if not r.get(field, "").strip()]
+        if rows:
+            blanks[field] = rows
+    return blanks
 
 
 def convert(mapping_path, input_path, output_path, tail=None):
@@ -72,6 +83,8 @@ def convert(mapping_path, input_path, output_path, tail=None):
         writer.writerows(rows_out)
 
     print(f"[OK] {len(rows_out)} rows written to {output_path}")
+    for field, rows in find_blank_derived_fields(rows_out, derived.keys()).items():
+        print(f"[WARN] {field!r} blank for {len(rows)} row(s): {', '.join(rows)}", file=sys.stderr)
 
 
 def main():

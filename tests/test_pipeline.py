@@ -8,7 +8,7 @@ from jinja2 import Template as JinjaTemplate
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'app'))
 
 from convert import convert as run_conversion
-from pipeline import QR_ENV, build_payload, load_qr_template, parse_template_meta
+from pipeline import QR_ENV, build_payload, expand_by_qty, load_qr_template, parse_template_meta
 
 QR_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), '..', 'templates', 'qr_payload.txt')
 
@@ -126,9 +126,32 @@ def test_type_over_threshold_gets_small_type_class():
     assert 'small-type' not in html.split(short_type)[0].splitlines()[-1]
 
 
+# REQ-001: TST-028
+def test_owner_set_over_threshold_gets_small_type_class():
+    tmpl_path = os.path.join(os.path.dirname(__file__), '..', 'templates', 'avery_l7161_a4_18.html')
+    long_owner, long_set = "DL BG", "ME02.5 Ascended Heroes"  # combined 30 chars, at threshold
+    short_owner, short_set = "DL", "SV08"  # combined well under threshold
+    html = JinjaTemplate(open(tmpl_path).read()).render(
+        cards=[{"qr": "x", "owner": long_owner, "set": long_set, "type": "t"},
+               {"qr": "x", "owner": short_owner, "set": short_set, "type": "t"}],
+        start=1
+    )
+    long_combined = f"{long_owner} · {long_set}"
+    short_combined = f"{short_owner} · {short_set}"
+    assert 'small-type' in html.split(long_combined)[0].splitlines()[-1]
+    assert 'small-type' not in html.split(short_combined)[0].splitlines()[-1]
+
+
 # REQ-003: TST-025
 def test_dateformat_filter_formats_iso_date():
     assert QR_ENV.filters["dateformat"]("2026-06-23T00:00:00.000+08:00") == "23-Jun-26"
+
+
+# REQ-005: TST-029
+def test_expand_by_qty_repeats_rows_by_qty():
+    cards = [{"owner": "a", "qty": "3"}, {"owner": "b", "qty": ""}, {"owner": "c"}]
+    expanded = expand_by_qty(cards)
+    assert [c["owner"] for c in expanded] == ["a", "a", "a", "b", "c"]
 
 
 # REQ-003: TST-020 (convert.py -> pipeline.py seam, real conversion output, not hand-typed fixtures)
