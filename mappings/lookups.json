@@ -1,6 +1,6 @@
 {
   "graded_prefixes": ["PSA", "BGS", "CGC", "SGC"],
-  "non_english_prefixes": ["JP ", "KR ", "ME "],
+  "non_english_prefixes": ["JP ", "KR "],
   "type_slugs": {
     "Booster Box": "booster-box",
     "ETB": "elite-trainer-box",
@@ -8,7 +8,9 @@
     "Booster Bundle": "booster-bundle",
     "Pack": "booster-pack",
     "3-Pack Blister": "3-pack-blister",
-    "Super Premium Collection": "super-premium-collection-box"
+    "Super Premium Collection": "super-premium-collection-box",
+    "Sleeved Pack": "sleeved-booster-pack",
+    "Premium Collection": "premium-collection"
   },
   "snkrdunk_ids": {
     "JP M2a Mega Dream": {
