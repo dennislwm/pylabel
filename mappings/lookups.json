@@ -6,6 +6,7 @@
     "ETB": "elite-trainer-box",
     "PC ETB": "elite-trainer-box-pokemon-center",
     "Booster Bundle": "booster-bundle",
+    "1-Pack Blister": "single-pack-blister",
     "Pack": "booster-pack",
     "3-Pack Blister": "3-pack-blister",
     "Super Premium Collection": "super-premium-collection-box",
@@ -16,7 +17,11 @@
     "JP M2a Mega Dream": {
       "240": "724996",
       "237": "730958",
-      "234": "730956"
+      "234": "730956",
+      "223": "722239"
+    },
+    "JP SV2a 151": {
+      "183": "128099"
     },
     "JP S12a Vstar Universe": {
       "212": "103079",
