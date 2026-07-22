@@ -202,3 +202,10 @@ def test_convert_output_feeds_build_payload_for_bulk_purchase(qr_template):
     assert "Qty: 3" in payload
     assert "Price: 1380.00" in payload
     assert "In: 4140.00" in payload
+
+
+# REQ-016: TST-034
+def test_build_payload_leads_with_url(qr_template, base_card):
+    card = {**base_card, "url": "https://x.com/card"}
+    payload = build_payload(card, offset=0, qr_template=qr_template)
+    assert payload.splitlines()[0] == "https://x.com/card"

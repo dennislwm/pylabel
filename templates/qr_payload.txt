@@ -1,4 +1,6 @@
-{% if refid %}Ref: {{ refid }}
+{# url MUST stay first: iOS Camera only offers a link when the payload starts with one (REQ-016) #}
+{% if url %}{{ url }}
+{% endif %}{% if refid %}Ref: {{ refid }}
 {% endif %}Date: {{ date|dateformat }}
 Owner: {{ owner }}
 {% if platform %}Platform: {{ platform }}
@@ -10,5 +12,4 @@ Owner: {{ owner }}
 Price: {{ price_amount }}
 {% endif %}In: {{ in_amount }}
 {% if out_amount is defined %}Out: {{ out_amount }}
-{% endif %}{% if url %}{{ url }}
 {% endif %}
