@@ -25,9 +25,15 @@ function check_printer {
     echo "[WARN][check_printer]: PRINTER not set"
     return 0
   fi
-  lpstat -p "$printer" > /dev/null 2>&1 \
-    && echo "[OK]   printer $printer is available" \
-    || echo "[ERROR][check_printer]: printer $printer not found -- run lpstat -p to list available printers"
+  local state
+  state=$(lpstat -p "$printer" 2>&1) || {
+    echo "[ERROR][check_printer]: printer $printer not found -- run lpstat -p to list available printers"
+    return 0
+  }
+  case "$state" in
+    *disabled*) echo "[ERROR][check_printer]: $state" ;;
+    *)          echo "[OK]   $state" ;;
+  esac
 }
 
 function show_status {
