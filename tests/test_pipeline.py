@@ -39,6 +39,15 @@ def test_build_payload_show_cents_uses_same_dollar_offset(qr_template, base_card
     assert "Out: 2000" in payload
 
 
+# REQ-006: TST-033
+def test_build_payload_blank_expense_exits_naming_the_row(qr_template, base_card):
+    card = {**base_card, "refid": "R-42", "expense": ""}
+    with pytest.raises(SystemExit) as e:
+        build_payload(card, offset=0, qr_template=qr_template)
+    assert "[ERROR]" in str(e.value)
+    assert "R-42" in str(e.value)
+
+
 # REQ-000: TST-002
 def test_build_payload_omits_out_when_blank(qr_template, base_card):
     card = {**base_card, "type": "X | 1", "url": "https://x.com"}
