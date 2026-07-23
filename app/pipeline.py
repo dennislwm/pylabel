@@ -12,6 +12,8 @@ import segno
 from jinja2 import Environment, Template
 from weasyprint import HTML
 
+from convert import convert
+
 QR_ENV = Environment(trim_blocks=True, lstrip_blocks=True)
 QR_ENV.filters["dateformat"] = lambda s: datetime.fromisoformat(s).strftime("%d-%b-%y")
 
@@ -63,6 +65,23 @@ def expand_by_qty(cards):
     return [c for c in cards for _ in range(int(c.get("qty") or 1))]
 
 
+class Pylabel:
+    """Library-facing API: build QR payloads, render label PDFs, and convert
+    CSVs -- no CLI side effects (no argparse, sys.exit, or print)."""
+
+    def __init__(self, qr_template_path):
+        self.qr_template = load_qr_template(qr_template_path)
+
+    def build_payload(self, card, offset, show_cents=False):
+        return build_payload(card, offset, self.qr_template, show_cents)
+
+    def card_to_qr_b64(self, card, offset, show_cents=False):
+        return card_to_qr_b64(card, offset, self.qr_template, show_cents)
+
+    def convert(self, mapping_path, input_path, output_path, tail=None):
+        return convert(mapping_path, input_path, output_path, tail=tail)
+
+
 def parse_template_meta(path):
     m = re.search(r'_([a-z0-9]+)_(\d+)\.html$', path)
     if not m:
@@ -83,9 +102,9 @@ def main():
     if len(cards) < batch_min and not args.force:
         sys.exit(f"[ERROR] Only {len(cards)} rows found; need {batch_min} for a full sheet. Use --force to print anyway.")
     print(f"[OK] Loaded {len(cards)} rows from {args.csv}")
-    qr_template = load_qr_template(args.qr_template)
+    pylabel = Pylabel(args.qr_template)
     for card in cards:
-        card["qr"] = card_to_qr_b64(card, args.offset, qr_template, args.show_cents)
+        card["qr"] = pylabel.card_to_qr_b64(card, args.offset, args.show_cents)
     print(f"[OK] QR generated for {len(cards)} cards")
     html = Template(open(args.template).read()).render(cards=cards, start=args.start_label)
     print(f"[OK] Template rendered ({len(html)} chars)")

@@ -8,7 +8,7 @@ from jinja2 import Template as JinjaTemplate
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'app'))
 
 from convert import convert as run_conversion
-from pipeline import QR_ENV, build_payload, expand_by_qty, load_qr_template, parse_template_meta
+from pipeline import QR_ENV, Pylabel, build_payload, card_to_qr_b64, expand_by_qty, load_qr_template, parse_template_meta
 
 QR_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), '..', 'templates', 'qr_payload.txt')
 
@@ -110,6 +110,52 @@ def test_build_payload_shows_qty_price_when_bulk(qr_template, base_card):
     payload_cents = build_payload(card, offset=0, qr_template=qr_template, show_cents=True)
     assert "Price: 138000" in payload_cents
     assert "In: 414000" in payload_cents
+
+
+# REQ-023: TST-036 (ADR-016 Option 4 -- Pylabel is importable without the CLI)
+def test_pylabel_build_payload_matches_module_function(base_card):
+    card = {**base_card, "type": "X | 1", "price_menu": "15.00", "url": "https://x.com"}
+    lib = Pylabel(QR_TEMPLATE_PATH)
+    assert lib.build_payload(card, offset=5) == build_payload(card, offset=5, qr_template=load_qr_template(QR_TEMPLATE_PATH))
+
+
+def test_pylabel_card_to_qr_b64_matches_module_function(base_card):
+    card = {**base_card, "type": "X | 1", "url": "https://x.com"}
+    lib = Pylabel(QR_TEMPLATE_PATH)
+    assert lib.card_to_qr_b64(card, offset=0) == card_to_qr_b64(card, offset=0, qr_template=load_qr_template(QR_TEMPLATE_PATH))
+
+
+def test_pylabel_convert_matches_module_function():
+    mapping = {
+        "doc_id": "test", "table_id": "test",
+        "columns": {"Owner": "owner", "Set": "set", "Date": "date"},
+        "derived": {},
+    }
+    lookups = {"graded_prefixes": [], "non_english_prefixes": [], "type_slugs": {}}
+    fieldnames = ["Owner", "Set", "Date"]
+
+    with tempfile.TemporaryDirectory() as d:
+        mapping_path = os.path.join(d, "mapping.json")
+        lookups_path = os.path.join(d, "lookups.json")
+        input_path = os.path.join(d, "input.csv")
+        output_path = os.path.join(d, "output.csv")
+
+        with open(mapping_path, "w") as f:
+            json.dump(mapping, f)
+        with open(lookups_path, "w") as f:
+            json.dump(lookups, f)
+        with open(input_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerow({"Owner": "DL", "Set": "SV08", "Date": "2026-01-01"})
+
+        lib = Pylabel(QR_TEMPLATE_PATH)
+        lib.convert(mapping_path, input_path, output_path)
+
+        with open(output_path, newline="") as f:
+            row = next(csv.DictReader(f))
+
+    assert row == {"owner": "DL", "set": "SV08", "date": "2026-01-01"}
 
 
 # REQ-001: start-label pads blank grid cells before the real cards
