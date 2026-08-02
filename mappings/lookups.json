@@ -31,7 +31,8 @@
       "098/SV-P": "135232"
     },
     "JP SV Promo": {
-      "218": "332798"
+      "218": "332798",
+      "098": "135232"
     },
     "JP M5 Abyss Eye": {
       "Booster Box": "806644"
@@ -47,6 +48,24 @@
     },
     "JP SV1a Triple Beat": {
       "80": "116069"
+    },
+    "JP SM11 Miracle Twin": {
+      "096": "104592"
+    },
+    "JP SM11a Remix Bout": {
+      "67": "104574"
+    },
+    "JP SM9 Tag Bolt": {
+      "19": "396322"
+    },
+    "JP SMM Starter Set Tag Team GX": {
+      "10": "392852"
+    },
+    "JP M3 Nihil Zero": {
+      "114": "753242"
+    },
+    "JP SV11w White Flare": {
+      "168": "607938"
     }
   }
 }
