@@ -6,12 +6,15 @@
     "ETB": "elite-trainer-box",
     "PC ETB": "elite-trainer-box-pokemon-center",
     "Booster Bundle": "booster-bundle",
+    "Booster Bundle Display": "booster-bundle-display-box",
     "1-Pack Blister": "single-pack-blister",
     "Pack": "booster-pack",
     "3-Pack Blister": "3-pack-blister",
+    "2-Pack Blister": "2-pack-blister-collection",
     "Super Premium Collection": "super-premium-collection-box",
     "Sleeved Pack": "sleeved-booster-pack",
-    "Premium Collection": "premium-collection"
+    "Premium Collection": "premium-collection",
+    "Poster Collection": "poster-collection"
   },
   "snkrdunk_ids": {
     "JP M2a Mega Dream": {
@@ -25,6 +28,7 @@
       "183": "128099"
     },
     "JP S12a Vstar Universe": {
+      "183": "103085",
       "212": "103079",
       "221": "103080"
     },
@@ -56,10 +60,12 @@
       "096": "104592"
     },
     "JP SM11a Remix Bout": {
-      "67": "104574"
+      "67": "104574",
+      "070": "104571"
     },
     "JP SM9 Tag Bolt": {
-      "19": "396322"
+      "19": "396322",
+      "066": "396368"
     },
     "JP SMM Starter Set Tag Team GX": {
       "10": "392852"
@@ -69,6 +75,33 @@
     },
     "JP SV11w White Flare": {
       "168": "607938"
+    },
+    "JP SV11b Black Bolt": {
+      "169": "607934"
+    },
+    "JP Attack of the Vine": {
+      "Booster Box": "850689"
+    },
+    "JP M6 Storm Emeralda": {
+      "Booster Box": "846050"
+    },
+    "JP SM9b Full Metal Wall": {
+      "029": "393271"
+    },
+    "JP SM11b Dream League": {
+      "054": "126664"
+    },
+    "JP SM3 Shining Legends": {
+      "082": "91342"
+    },
+    "JP Mega Starter Set": {
+      "Eevee": "853200"
+    },
+    "JP SM12a Tag Team All Stars": {
+      "177": "91271"
+    },
+    "JP SV8a Terastal Festival": {
+      "202": "459531"
     }
   }
 }
