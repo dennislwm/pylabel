@@ -17,11 +17,18 @@
     "Poster Collection": "poster-collection"
   },
   "snkrdunk_ids": {
+    "JP S8a 25th Anniversary Collection": {
+      "025": "141447",
+      "026": "141447",
+      "027": "141447",
+      "028": "141447"
+    },
     "JP M2a Mega Dream": {
       "240": "724996",
       "237": "730958",
       "234": "730956",
       "223": "722239",
+      "246": "730964",
       "Booster Box": "721913"
     },
     "JP SV2a 151": {
@@ -29,6 +36,7 @@
     },
     "JP S12a Vstar Universe": {
       "183": "103085",
+      "205": "105553",
       "212": "103079",
       "221": "103080"
     },
@@ -45,7 +53,7 @@
       "Booster Box": "806644"
     },
     "JP S6a Eevee Heroes": {
-      "83": "91177"
+      "083": "91177"
     },
     "JP M2 Inferno X": {
       "Booster Box": "687430"
@@ -55,6 +63,10 @@
     },
     "JP SV1a Triple Beat": {
       "80": "116069"
+    },
+    "JP SV3 Ruler of the Black Flame": {
+      "134": "132279",
+      "139": "132284"
     },
     "JP SM11 Miracle Twin": {
       "096": "104592"
@@ -89,7 +101,8 @@
       "029": "393271"
     },
     "JP SM11b Dream League": {
-      "054": "126664"
+      "054": "126664",
+      "058": "123606"
     },
     "JP SM3 Shining Legends": {
       "082": "91342"
@@ -101,7 +114,17 @@
       "177": "91271"
     },
     "JP SV8a Terastal Festival": {
-      "202": "459531"
+      "202": "459531",
+      "206": "455594"
+    },
+    "JP SV3a Raging Surf": {
+      "65": "136489"
+    },
+    "JP SV5a Crimson Haze": {
+      "90": "224087"
+    },
+    "JP SV4a Shiny Treasure": {
+      "341": "164260"
     }
   }
 }
