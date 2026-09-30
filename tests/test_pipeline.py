@@ -112,6 +112,16 @@ def test_build_payload_shows_qty_price_when_bulk(qr_template, base_card):
     assert "In: 414000" in payload_cents
 
 
+# REQ-028: TST-037
+def test_cert_line_links_psa_only(qr_template, base_card):
+    psa = build_payload({**base_card, "type": "PSA10 | X | 1", "serial_no": "168951923"}, 0, qr_template)
+    assert "Cert: #168951923 | https://www.psacard.com/cert/168951923/psa\n" in psa
+    other = build_payload({**base_card, "type": "Oxley DL | X | 1", "serial_no": "168951923"}, 0, qr_template)
+    assert "Cert: #168951923\n" in other and "psacard.com" not in other
+    del base_card["type"]
+    assert "Cert: #168951923\n" in build_payload({**base_card, "serial_no": "168951923"}, 0, qr_template)
+
+
 # REQ-023: TST-036 (ADR-016 Option 4 -- Pylabel is importable without the CLI)
 def test_pylabel_build_payload_matches_module_function(base_card):
     card = {**base_card, "type": "X | 1", "price_menu": "15.00", "url": "https://x.com"}

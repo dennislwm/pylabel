@@ -5,7 +5,7 @@ Owner: {{ owner }}
 {% endif %}{% if vendor %}Vendor: {{ vendor }}
 {% endif %}Set: {{ set }}
 {% if type %}Type: {{ type }}
-{% endif %}{% if serial_no %}Cert: {{ serial_no }}
+{% endif %}{% if serial_no %}Cert: #{{ serial_no }}{{ ' | https://www.psacard.com/cert/' ~ serial_no ~ '/psa' if (type or '').startswith('PSA') }}
 {% endif %}{% if qty|int > 1 %}Qty: {{ qty }}
 Price: {{ price_amount }}
 {% endif %}In: {{ in_amount }}
