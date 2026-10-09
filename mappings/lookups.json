@@ -14,9 +14,16 @@
     "Super Premium Collection": "super-premium-collection-box",
     "Sleeved Pack": "sleeved-booster-pack",
     "Premium Collection": "premium-collection",
-    "Poster Collection": "poster-collection"
+    "Poster Collection": "poster-collection",
+    "Mini Portfolio": "2026-mini-portfolio"
   },
   "snkrdunk_ids": {
+    "JP S8a-P 25th Anniversary": {
+      "012": "91160"
+    },
+    "JP S8a 25th Anniversary": {
+      "012": "91160"
+    },
     "JP S8a 25th Anniversary Collection": {
       "025": "141447",
       "026": "141447",
@@ -25,6 +32,7 @@
     },
     "JP M2a Mega Dream": {
       "240": "724996",
+      "236": "730957",
       "237": "730958",
       "234": "730956",
       "223": "722239",
@@ -41,7 +49,11 @@
       "221": "103080"
     },
     "JP SVP Promo": {
-      "098/SV-P": "135232"
+      "098/SV-P": "135232",
+      "208": "106796",
+      "050": "151713",
+      "051": "151714",
+      "052": "151715"
     },
     "JP SV Promo": {
       "218": "332798",
@@ -59,10 +71,10 @@
       "Booster Box": "687430"
     },
     "JP S10b Pokemon Go": {
-      "74": "91133"
+      "074": "91133"
     },
     "JP SV1a Triple Beat": {
-      "80": "116069"
+      "080": "116069"
     },
     "JP SV3 Ruler of the Black Flame": {
       "134": "132279",
@@ -72,15 +84,15 @@
       "096": "104592"
     },
     "JP SM11a Remix Bout": {
-      "67": "104574",
+      "067": "104574",
       "070": "104571"
     },
     "JP SM9 Tag Bolt": {
-      "19": "396322",
+      "019": "396322",
       "066": "396368"
     },
     "JP SMM Starter Set Tag Team GX": {
-      "10": "392852"
+      "010": "392852"
     },
     "JP M3 Nihil Zero": {
       "114": "753242"
@@ -100,7 +112,12 @@
     },
     "JP M6a 30th Celebrations": {
       "Booster Box": "881427",
-      "Espeon & Umbreon": "881423"
+      "Espeon & Umbreon": "881423",
+      "Pack": "881422",
+      "126": "882279",
+      "131": "896992",
+      "134": "881428",
+      "142": "886017"
     },
     "JP SM9b Full Metal Wall": {
       "029": "393271"
@@ -123,16 +140,21 @@
       "206": "455594"
     },
     "JP SV3a Raging Surf": {
-      "65": "136489"
+      "065": "136489"
     },
     "JP SV5a Crimson Haze": {
-      "90": "224087"
+      "090": "224087",
+      "078": "224086"
     },
     "JP SV4a Shiny Treasure": {
-      "341": "164260"
+      "341": "164260",
+      "331": "151753"
     },
     "JP Start Deck 100": {
       "764": "737036"
+    },
+    "JP SWSH Promo": {
+      "189": "93004"
     }
   }
 }

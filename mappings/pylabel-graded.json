@@ -15,6 +15,6 @@
     "qty": "{{ Qty if Qty and Price else 1 }}",
     "price": "{{ Price if Qty and Price else Expense }}",
     "type": "{{ Type }} | {{ Character }} | {{ Card_No }}",
-    "url": "{% if Set.startswith(non_english_prefixes) %}{% set sid = snkrdunk_ids.get(Set, {}).get(Card_No) %}{% if sid %}https://snkrdunk.com/apparels/{{ sid }}{% endif %}{% else %}https://www.pricecharting.com/search-products?type=prices&q={{ (Character ~ ' ' ~ Card_No)|urlencode }}{% endif %}"
+    "url": "{% if Set.startswith(non_english_prefixes) %}{% set key = Card_No.split('/')[0].zfill(3) if Card_No.split('/')[-1].isdigit() else Card_No %}{% set sid = snkrdunk_ids.get(Set, {}).get(key) %}{% if sid %}https://snkrdunk.com/apparels/{{ sid }}{% endif %}{% else %}https://www.pricecharting.com/search-products?type=prices&q={{ (Character ~ ' ' ~ Card_No)|urlencode }}{% endif %}"
   }
 }
