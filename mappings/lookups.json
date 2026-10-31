@@ -17,6 +17,9 @@
     "Poster Collection": "poster-collection",
     "Mini Portfolio": "2026-mini-portfolio"
   },
+  "set_slugs": {
+    "ME05.5 30th Celebrations": "30th-celebration"
+  },
   "snkrdunk_ids": {
     "JP S8a-P 25th Anniversary": {
       "012": "91160"
@@ -117,6 +120,8 @@
       "126": "882279",
       "131": "896992",
       "134": "881428",
+      "135": "881429",
+      "137": "882281",
       "142": "886017"
     },
     "JP SM9b Full Metal Wall": {
@@ -137,7 +142,8 @@
     },
     "JP SV8a Terastal Festival": {
       "202": "459531",
-      "206": "455594"
+      "206": "455594",
+      "212": "455595"
     },
     "JP SV3a Raging Surf": {
       "065": "136489"
@@ -155,6 +161,9 @@
     },
     "JP SWSH Promo": {
       "189": "93004"
+    },
+    "JP CP3 Pokekyun": {
+      "005": "106723"
     }
   }
 }

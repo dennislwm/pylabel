@@ -26,6 +26,7 @@ def build_environment(lookups):
         graded_prefixes=tuple(lookups["graded_prefixes"]),
         non_english_prefixes=tuple(lookups["non_english_prefixes"]),
         snkrdunk_ids=lookups.get("snkrdunk_ids", {}),
+        set_slugs=lookups.get("set_slugs", {}),
     )
     env.filters["type_slug"] = lambda t: lookups["type_slugs"].get(t)
     env.filters["slugify"] = set_to_slug
