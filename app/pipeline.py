@@ -45,6 +45,8 @@ def build_payload(card, offset, qr_template, show_cents=False):
     fmt = (lambda c: c) if show_cents else (lambda c: f"{c / 100:.2f}")
     if not card.get("expense", "").strip():
         sys.exit(f"[ERROR] blank expense for row {card.get('refid') or card}")
+    if (card.get("type") or "").startswith("PSA") and not (card.get("serial_no") or "").strip():
+        print(f"[WARN] PSA row {card.get('refid')}: blank serial_no, no cert link", file=sys.stderr)
     ctx["in_amount"] = fmt(round(float(card["expense"]) * 100) + offset_cents)
     if card.get("price_menu", "").strip():
         ctx["out_amount"] = fmt(round(float(card["price_menu"]) * 100) + offset_cents)
